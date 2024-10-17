@@ -1,0 +1,30 @@
+name: keepalive_kyb
+
+on:
+  schedule:
+    # 每隔6天运行一次，运行时间点自行设置(此处北京时间8:14运行)
+    - cron: '14 0 */6 * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run Keepalive
+      run: python3 koyeb.py
+      env:
+        KOY_EB: ${{ secrets.KOY_EB }}
+        TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}  ## 填写对应的平台通知变量名，若需要多平台同时推送，请按此格式填写多个平台对应的变量名即可
+        TG_USER_ID: ${{ secrets.TG_USER_ID }}

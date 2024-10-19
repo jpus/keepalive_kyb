@@ -17,11 +17,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       
-    - name: Set up WARP
-      uses: fscarmen/warp-on-actions@v1.2
-      with:
-        stack: dual   # Optional. Support [ ipv4, ipv6, dual ]. Default is dual.
-
     - name: Set up Python
       uses: actions/setup-python@v4
       with:

@@ -2,8 +2,8 @@ name: keepalive_kyb
 
 on:
   schedule:
-    # 每隔6天运行一次，运行时间点自行设置(此处北京时间8:14运行)
-    - cron: '14 0 */6 * *'
+    # 每周五运行一次，运行时间点自行设置(此处北京时间22:00运行)
+    - cron: '0 14 * * 5'
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,11 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      
+    - name: Set up WARP
+      uses: fscarmen/warp-on-actions@v1.2
+      with:
+        stack: dual   # Optional. Support [ ipv4, ipv6, dual ]. Default is dual.
 
     - name: Set up Python
       uses: actions/setup-python@v4

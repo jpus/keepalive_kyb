@@ -4,7 +4,11 @@ on:
   schedule:
     # 每周五运行一次，运行时间点自行设置(此处北京时间22:00运行)
     - cron: '0 14 * * 5'
-  workflow_dispatch:
+  # 手动运行参数workflow_dispatch:
+  #workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:

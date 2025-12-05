@@ -1,0 +1,59 @@
+name: keepalive_kyb
+
+on:
+  schedule:
+    # 每周五运行一次，运行时间点自行设置(此处北京时间22:00运行)
+    - cron: '0 14 * * 5'
+  # 手动运行参数workflow_dispatch:
+  #workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run Keepalive
+      run: python3 koyeb.py
+      env:
+        KOY_EB: ${{ secrets.KOY_EB }}
+        TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}  ## 填写对应的平台通知变量名，若需要多平台同时推送，请按此格式填写多个平台对应的变量名即可
+        TG_USER_ID: ${{ secrets.TG_USER_ID }}
+
+    - name: Renew README.md
+      run: |
+            DATE=$(date "+%Y/%m/%d %H:%M:%S")
+            echo "${DATE}" > README.md
+            git checkout --orphan tmp_work
+            git branch -d main
+            echo "DATE=${DATE}" >> $GITHUB_ENV
+
+    - name: Upload to repository
+      uses: stefanzweifel/git-auto-commit-action@v4.16.0
+      with:
+          commit_message: Auto deploy by Github Actions, ${{ env.DATE }}
+          create_branch: true
+          branch: main
+          push_options: --force
+
+    - name: Delete old workflow runs
+      uses: MajorScruffy/delete-old-workflow-runs@v0.3.0
+      env:
+          GITHUB_TOKEN: ${{ github.token }}
+      with:
+          repository: ${{ github.repository }}
+          older-than-seconds: 3600
